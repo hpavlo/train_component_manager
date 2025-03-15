@@ -18,6 +18,6 @@ namespace TrainComponentManager.API.Models
         [Required]
         public bool CanAssignQuantity { get; set; }
 
-        public uint Quantity { get; set; } = 0;
+        public uint Quantity { get; set; }
     }
 }
