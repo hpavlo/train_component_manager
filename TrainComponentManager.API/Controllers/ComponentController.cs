@@ -47,10 +47,12 @@ namespace TrainComponentManager.API.Controllers
         public async Task<IActionResult> Get(int id)
         {
             var component = await _componentRepository.GetAsync(id);
+
             if (component == null)
             {
                 return NotFound();
             }
+
             return Ok(component.ToResponseDto());
         }
 
@@ -62,12 +64,12 @@ namespace TrainComponentManager.API.Controllers
 
             var updatedComponent = await _componentRepository.UpdateAsync(component);
 
-            if (updatedComponent == null)
+            if (updatedComponent != null)
             {
-                return NotFound();
+                return Ok(updatedComponent.ToResponseDto());
             }
 
-            return NoContent();
+            return NotFound();
         }
 
         [HttpDelete("{id}")]
