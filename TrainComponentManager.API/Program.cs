@@ -16,6 +16,17 @@ builder.Services.AddDbContext<ComponentsDbContext>(options =>
 
 builder.Services.AddScoped<IComponentRepository, ComponentRepository>();
 
+var clientUrl = builder.Configuration.GetValue<string>("ClientUrl");
+if (clientUrl != null)
+{
+    builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins(clientUrl)
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    }));
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -30,5 +41,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors();
 
 app.Run();
