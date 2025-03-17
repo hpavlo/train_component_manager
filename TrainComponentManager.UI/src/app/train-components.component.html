@@ -1,1 +1,110 @@
-<p>train-components works!</p>
+<ng-template #componentFormTemplate let-component="component" let-submitAction="submitAction"
+	let-cancelAction="cancelAction">
+	<td>
+		<form #internalForm="ngForm">
+			<input [(ngModel)]="component.name" *ngIf="component" class="form-column" maxlength="255" name="name"
+				placeholder="Name" required title="Name" type="text" />
+		</form>
+	</td>
+	<td>
+		<form #internalForm="ngForm">
+			<input [(ngModel)]="component.uniqueNumber" *ngIf="component" class="form-column" maxlength="50"
+				name="uniqueNumber" placeholder="Unique Number" required title="Unique Number" type="text" />
+		</form>
+	</td>
+	<td>
+		<form #internalForm="ngForm" class="checkbox-container form-column">
+			<input [(ngModel)]="component.canAssignQuantity" *ngIf="component" class="form-quantity-checkbox"
+				name="canAssignQuantity" title="Can Assign Quantity" type="checkbox" />
+			<input [(ngModel)]="component.quantity" *ngIf="component && component.canAssignQuantity"
+				class="form-quantity-input" min="1" name="quantity" placeholder="Quantity" required title="Quantity"
+				type="number" />
+		</form>
+	</td>
+	<td>
+		<button (click)="submitAction()" [disabled]="internalForm.invalid" class="btn btn-primary btn-sm mx-1" title="Save"
+			type="button">
+			<i class="bi bi-floppy"></i>
+		</button>
+		<button (click)="cancelAction()" class="btn btn-danger btn-sm mx-1" title="Cancel" type="button">
+			<i class="bi bi-x-lg"></i>
+		</button>
+	</td>
+</ng-template>
+
+<div class="components-container">
+	<h1>Train Components</h1>
+
+	<div class="search-container">
+		<input [(ngModel)]="searchTerm" (keydown.enter)="startSearch()" class="search-input" placeholder="Search..."
+			type="text" />
+		<button (click)="startSearch()" class="btn btn-primary btn-sm mx-1">Search</button>
+		<button (click)="clearSearch()" class="btn btn-secondary btn-sm mx-1">Cancel</button>
+	</div>
+
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th class="id-column">Id</th>
+				<th #nameColumn class="name-column">Name</th>
+				<th class="unique-number-column">Unique Number</th>
+				<th class="quantity-column">Quantity</th>
+				<th class="actions-column">
+					<button (click)="addNewComponent()" class="btn btn-primary btn-sm mx-1" title="Add New Component"
+						type="button">
+						<i class="bi bi-plus"></i>
+					</button>
+				</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<tr *ngIf="newComponent" class="table-primary">
+				<td></td>
+				<ng-container *ngTemplateOutlet="
+            componentFormTemplate;
+            context: { component: newComponent, submitAction: createComponent.bind(this), cancelAction: cancelCreating.bind(this) }
+          "></ng-container>
+			</tr>
+
+			<ng-container *ngFor="let component of components">
+				<tr *ngIf="selectedComponent?.id !== component.id">
+					<td>{{ component.id }}</td>
+					<td>{{ component.name }}</td>
+					<td>{{ component.uniqueNumber }}</td>
+					<td>{{ component.canAssignQuantity ? component.quantity : '' }}</td>
+					<td>
+						<button (click)="editComponent(component)" class="btn btn-primary btn-sm mx-1" title="Edit Component"
+							type="button">
+							<i class="bi bi-pencil-square"></i>
+						</button>
+						<button (click)="deleteComponent(component.id)" class="btn btn-danger btn-sm mx-1" title="Delete Component"
+							type="button">
+							<i class="bi bi-trash"></i>
+						</button>
+					</td>
+				</tr>
+
+				<tr *ngIf="selectedComponent?.id === component.id" class="table-secondary">
+					<td>{{ selectedComponent?.id }}</td>
+					<ng-container *ngTemplateOutlet="
+              componentFormTemplate;
+              context: { component: selectedComponent, submitAction: updateComponent.bind(this), cancelAction: cancelEditing.bind(this) }
+            "></ng-container>
+				</tr>
+			</ng-container>
+		</tbody>
+	</table>
+	<div class="pagination-container">
+		<div>Total Count: {{ totalCount }}</div>
+		<div>
+			<button (click)="previewPage()" [disabled]="pageNumber <= 1" class="btn btn-secondary btn-sm">Previous</button>
+			<span class="page-number">Page {{ pageNumber }}</span>
+			<button (click)="nextPage()" [disabled]="pageNumber * pageSize >= totalCount"
+				class="btn btn-secondary btn-sm">Next</button>
+		</div>
+	</div>
+	<div *ngIf="errorMessage" class="error-message">
+		<p>{{ errorMessage }}</p>
+	</div>
+</div>

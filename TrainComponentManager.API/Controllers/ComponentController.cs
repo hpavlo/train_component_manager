@@ -66,7 +66,7 @@ namespace TrainComponentManager.API.Controllers
 
             if (updatedComponent != null)
             {
-                return Ok(updatedComponent.ToResponseDto());
+                return NoContent();
             }
 
             return NotFound();
